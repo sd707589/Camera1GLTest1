@@ -20,11 +20,6 @@ public class MyNDKOpencv {
     private Bitmap resultImg;
     private int dispWidth,disHeight,disDensity;
     MyNDKOpencv(){
-        DisplayMetrics displayMetrics=MainActivity.context.getResources().getDisplayMetrics();//需要在Mainactivity中新增context变量
-        dispWidth=displayMetrics.widthPixels;
-        disHeight=displayMetrics.heightPixels;
-        disDensity=(int)displayMetrics.density;
-
     }
     public Bitmap scanfEffect(byte[] data, int srcWidth, int srcHeight){
         BitmapFactory.Options newOpts = new BitmapFactory.Options();

@@ -16,8 +16,6 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static Context context;
-
     private RelativeLayout previewLayout;
     private MyGLSurfaceView myGLSurfaceView;
     @Override
@@ -27,7 +25,6 @@ public class MainActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
-        context=getApplicationContext();
 
         requestPermission();
         previewLayout=(RelativeLayout)findViewById(R.id.previewLayout);
@@ -40,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
     void requestPermission(){
         final int REQUEST_CODE = 1;
-        if (ContextCompat.checkSelfPermission(MainActivity.context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{
                             Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     REQUEST_CODE);

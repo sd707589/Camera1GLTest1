@@ -12,6 +12,7 @@ import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
@@ -31,8 +32,7 @@ public class MyGLSurfaceView extends GLSurfaceView implements SurfaceHolder.Call
     //OpenGLES相关
     private int srcFrameWidth  = 640;// 源视频帧宽/高
     private int srcFrameHeight = 480;
-    private int viewWidth = 0, viewHeight = 0;
-    private int frameWidth = 640, frameHeight = 480;
+    private int srcDensity=3;
     // 纹理id
     private boolean mbpaly = false;
     private FloatBuffer squareVertices = null;
@@ -63,6 +63,12 @@ public class MyGLSurfaceView extends GLSurfaceView implements SurfaceHolder.Call
     public MyGLSurfaceView(Context context)
     {
         super(context);
+        DisplayMetrics displayMetrics=context.getResources().getDisplayMetrics();//需要在Mainactivity中新增context变量
+        srcFrameWidth=displayMetrics.widthPixels;//屏幕为1920
+        srcFrameHeight=displayMetrics.heightPixels;//屏幕为1080
+        srcDensity=(int)displayMetrics.density;//屏幕为3
+
+
         //设置Renderer到GLSurfaceView
         setRenderer(new MyGL20Renderer());
         // 只有在绘制数据改变时才绘制view
@@ -114,10 +120,11 @@ public class MyGLSurfaceView extends GLSurfaceView implements SurfaceHolder.Call
             if (printCharacters){
                 List<Camera.Size> previewSizes = params.getSupportedPreviewSizes();
                 for(int i=0;i<previewSizes.size();i++){
-                    Log.i(TAG,"SupportedPreviewSizes:"+String.valueOf(previewSizes.get(i).width)+", "+String.valueOf(previewSizes.get(i).height));
+                    Log.i(TAG,"SupportedPreviewSizes:"+
+                            String.valueOf(previewSizes.get(i).width)+", "+
+                            String.valueOf(previewSizes.get(i).height));
+
                 }
-                srcFrameWidth=640;
-                srcFrameHeight=480;
 
             }
 
@@ -129,6 +136,10 @@ public class MyGLSurfaceView extends GLSurfaceView implements SurfaceHolder.Call
 
             try
             {
+                //眼镜的尺寸为1280x720
+                srcFrameWidth=640;
+                srcFrameHeight=360;
+
                 params.setPreviewFormat(ImageFormat.NV21);
                 params.setPreviewSize(srcFrameWidth, srcFrameHeight);
                 params.setPreviewFpsRange(15*1000, 30*1000);
@@ -276,9 +287,6 @@ public class MyGLSurfaceView extends GLSurfaceView implements SurfaceHolder.Call
         @Override
         public void onSurfaceChanged(GL10 gl, int width, int height)
         {
-
-            viewWidth  = width;
-            viewHeight = height;
             // 初始化单位矩阵
             gl.glLoadIdentity();
             // 计算透视视窗的宽度、高度比
@@ -292,8 +300,6 @@ public class MyGLSurfaceView extends GLSurfaceView implements SurfaceHolder.Call
     {
         if (  length != 0 && mbpaly )
         {
-            srcFrameWidth  = srcWidth;
-            srcFrameHeight = srcHeight;
             MyNDKOpencv myNDKOpencv=new MyNDKOpencv();
             //OpenCV Processing
             grayImg = myNDKOpencv.scanfEffect(data,srcFrameWidth,srcFrameHeight);
