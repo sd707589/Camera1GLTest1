@@ -1,6 +1,7 @@
 package opencv4unity.camera1gltest1;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -10,6 +11,9 @@ import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
@@ -60,9 +64,12 @@ public class MyGLSurfaceView extends GLSurfaceView implements SurfaceHolder.Call
     private static final String TAG = "MyGLSurfaceView";
     private SurfaceTexture surfaceTexture;
 
+    private Activity activity;
+    public int model=0;
     public MyGLSurfaceView(Context context)
     {
         super(context);
+
         DisplayMetrics displayMetrics=context.getResources().getDisplayMetrics();//需要在Mainactivity中新增context变量
         srcFrameWidth=displayMetrics.widthPixels;//屏幕为1920
         srcFrameHeight=displayMetrics.heightPixels;//屏幕为1080
@@ -120,9 +127,12 @@ public class MyGLSurfaceView extends GLSurfaceView implements SurfaceHolder.Call
             if (printCharacters){
                 List<Camera.Size> previewSizes = params.getSupportedPreviewSizes();
                 for(int i=0;i<previewSizes.size();i++){
-                    Log.i(TAG,"SupportedPreviewSizes:"+
-                            String.valueOf(previewSizes.get(i).width)+", "+
-                            String.valueOf(previewSizes.get(i).height));
+                    //因AR眼睛尺寸为1280x720，故选择的尺寸应为其同比例。故选择640x360
+                    if (1280/previewSizes.get(i).width == 720/previewSizes.get(i).height){
+                        Log.i(TAG, "SupportedGlassesPreviewSizes: "+
+                                String.valueOf(previewSizes.get(i).width)+", "+
+                                String.valueOf(previewSizes.get(i).height));
+                    }
 
                 }
 
@@ -300,10 +310,28 @@ public class MyGLSurfaceView extends GLSurfaceView implements SurfaceHolder.Call
     {
         if (  length != 0 && mbpaly )
         {
-            MyNDKOpencv myNDKOpencv=new MyNDKOpencv();
+            final MyNDKOpencv myNDKOpencv=new MyNDKOpencv();
             //OpenCV Processing
-            grayImg = myNDKOpencv.scanfEffect(data,srcFrameWidth,srcFrameHeight);
+            grayImg = myNDKOpencv.scanfEffect(data,srcFrameWidth,srcFrameHeight,model);
             requestRender();
+            Log.i(TAG, "LeftUpPoint: "+myNDKOpencv.leftUpPt_x+", "+myNDKOpencv.leftUpPt_y);
+//            //update the LeftUpPoint Location
+//            new Thread(){
+//                Handler handlerUi=new Handler();
+//                @Override
+//                public void run() {
+//                    super.run();
+//                    Looper.prepare();
+//                    handlerUi.sendEmptyMessage(0);
+//                    Message msg=new Message();
+//                    msg.obj="("+myNDKOpencv.leftUpPt_x+","+myNDKOpencv.leftUpPt_y+")";
+//                    handlerUi.sendMessage(msg);
+//                    Looper.loop();
+//                }
+//            }.start();
+
+
+
         }
     }
 }

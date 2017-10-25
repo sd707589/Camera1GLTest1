@@ -35,9 +35,9 @@ void deal(Mat &input, Point center){
             ptrColor[4 * i + 3] =255;
         }
     }
-    circle(input,Point(0,0),5,CV_RGB(b,g,r),-1);
-    circle(input,Point(100,0),10,CV_RGB(b,g,r),-1);
-    circle(input,Point(0,300),50,CV_RGB(b,g,r),-1);
+    circle(input,Point(0,0),5,Scalar(255,0,0,255),-1);//原点，最小圆
+    circle(input,Point(100,0),10,Scalar(0,255,0,255),-1);//x轴，中等圆
+    circle(input,Point(0,300),50,Scalar(0,0,255,255),-1);//y轴，最大圆
     gray.release();
     canny.release();
     temp.release();

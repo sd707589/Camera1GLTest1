@@ -189,7 +189,7 @@ void ExtractCase::drawPolylines(Point2f pts[],int size)
     //只画三条边
     for (size_t i = 0; i < size-1; i++)
     {
-        line(frame, pts[i], pts[i + 1], Scalar(255, 0, 0), 4);
+        line(frame, pts[i], pts[i + 1], Scalar(0, 0, 255,255), 4);
     }
 }
 };
