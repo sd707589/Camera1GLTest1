@@ -32,7 +32,12 @@ public class MainActivity extends AppCompatActivity {
 
         requestPermission();
         previewLayout=(RelativeLayout)findViewById(R.id.previewLayout);
-        myGLSurfaceView=new MyGLSurfaceView(this);
+        myGLSurfaceView=new MyGLSurfaceView(this, new MyGLSurfaceView.GetUiHandlerInterface() {
+            @Override
+            public void getUiHandler(Message leftUpPt) {
+                mHandler.sendMessage(leftUpPt);
+            }
+        });
         previewLayout.addView(myGLSurfaceView);
 
         textView = (TextView) findViewById(R.id.sample_text);
@@ -40,20 +45,19 @@ public class MainActivity extends AppCompatActivity {
 //        textView.setText(resultFromJni.text + resultFromJni.num);
 
     }
-//    private Handler mHandler=new Handler(){
-//        @Override
-//        public void handleMessage(Message msg) {
-//            super.handleMessage(msg);
-//            switch (msg.what){
-//                case 0:
-//                    String data=(String)msg.obj;
-//                    textView.setText("LeftUp Point is "+data);
-//                    break;
-//                default:
-//                    break;
-//            }
-//        }
-//    };
+    private Handler mHandler=new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case 0:
+                    textView.setText("LeftUp Point is "+msg.arg1+" , "+msg.arg2);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 
     void requestPermission(){
         final int REQUEST_CODE = 1;

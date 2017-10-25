@@ -66,9 +66,11 @@ public class MyGLSurfaceView extends GLSurfaceView implements SurfaceHolder.Call
 
     private Activity activity;
     public int model=0;
-    public MyGLSurfaceView(Context context)
+
+    public MyGLSurfaceView(Context context, GetUiHandlerInterface mainUiHandler)
     {
         super(context);
+        getUiHandlerInterface=mainUiHandler;
 
         DisplayMetrics displayMetrics=context.getResources().getDisplayMetrics();//需要在Mainactivity中新增context变量
         srcFrameWidth=displayMetrics.widthPixels;//屏幕为1920
@@ -305,7 +307,10 @@ public class MyGLSurfaceView extends GLSurfaceView implements SurfaceHolder.Call
             gl.glFrustumf(-ratio, ratio, -1, 1, 1, 10);
         }
     }
-
+    private GetUiHandlerInterface getUiHandlerInterface;
+    public interface GetUiHandlerInterface{
+        void getUiHandler(Message leftUpPt);
+    }
     public void onSaveFrames(byte[] data, int length, int srcWidth, int srcHeight)//读取图像数据
     {
         if (  length != 0 && mbpaly )
@@ -314,7 +319,13 @@ public class MyGLSurfaceView extends GLSurfaceView implements SurfaceHolder.Call
             //OpenCV Processing
             grayImg = myNDKOpencv.scanfEffect(data,srcFrameWidth,srcFrameHeight,model);
             requestRender();
-            Log.i(TAG, "LeftUpPoint: "+myNDKOpencv.leftUpPt_x+", "+myNDKOpencv.leftUpPt_y);
+//            Log.i(TAG, "LeftUpPoint: "+myNDKOpencv.leftUpPt_x+", "+myNDKOpencv.leftUpPt_y);
+
+            Message leftUpPtMsg=Message.obtain();
+            leftUpPtMsg.what=0;
+            leftUpPtMsg.arg1=myNDKOpencv.leftUpPt_x;
+            leftUpPtMsg.arg2=myNDKOpencv.leftUpPt_y;
+            getUiHandlerInterface.getUiHandler(leftUpPtMsg);
 //            //update the LeftUpPoint Location
 //            new Thread(){
 //                Handler handlerUi=new Handler();
