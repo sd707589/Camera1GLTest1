@@ -126,6 +126,9 @@ public class MyGLSurfaceView extends GLSurfaceView implements SurfaceHolder.Call
                 return;
             }
             Camera.Parameters params = camera.getParameters();
+
+
+
             if (printCharacters){
                 List<Camera.Size> previewSizes = params.getSupportedPreviewSizes();
                 for(int i=0;i<previewSizes.size();i++){
@@ -146,15 +149,22 @@ public class MyGLSurfaceView extends GLSurfaceView implements SurfaceHolder.Call
                 params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
             }
 
+            List<int[]> previewFpsRange =params.getSupportedPreviewFpsRange();
+            int[] setFps={15000,30000};
+            for (int i=0;i<previewFpsRange.size();i++){
+                if (previewFpsRange.get(i)[1]==setFps[1]){
+                    setFps[0]=previewFpsRange.get(i)[0];
+                }
+            }
+            params.setPreviewFpsRange(setFps[0], setFps[1]);//15,30
             try
             {
                 //眼镜的尺寸为1280x720
                 srcFrameWidth=640;
                 srcFrameHeight=360;
-
                 params.setPreviewFormat(ImageFormat.NV21);
                 params.setPreviewSize(srcFrameWidth, srcFrameHeight);
-                params.setPreviewFpsRange(15*1000, 30*1000);
+
                 camera.setParameters(params);
             }
             catch (Exception e)
@@ -202,7 +212,9 @@ public class MyGLSurfaceView extends GLSurfaceView implements SurfaceHolder.Call
     public void onPreviewFrame(byte[] bytes, Camera camera) {
         synchronized (this){//开启后台进程，也可通过AsyncTask
             //通过Callback，将前一帧图像通过，byte[] data 形式传递出去
-            onSaveFrames(bytes,bytes.length,srcFrameWidth,srcFrameHeight);
+            int width = camera.getParameters().getPreviewSize().width;
+            int height = camera.getParameters().getPreviewSize().height;
+            onSaveFrames(bytes,bytes.length,width,height);
         }
     }
 
